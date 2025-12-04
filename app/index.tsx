@@ -1,19 +1,43 @@
-import { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import { useRouter, useSegments } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Flower2 } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loading } from '@/components/Loading';
 import { theme } from '@/constants/theme';
 
 export default function Index() {
   const { session, loading } = useAuth();
   const router = useRouter();
   const segments = useSegments();
+  const [showSplash, setShowSplash] = useState(true);
+  const fadeAnim = new Animated.Value(0);
+  const scaleAnim = new Animated.Value(0.8);
 
   useEffect(() => {
-    if (loading) return;
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        tension: 50,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    const splashTimer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2500);
+
+    return () => clearTimeout(splashTimer);
+  }, []);
+
+  useEffect(() => {
+    if (loading || showSplash) return;
 
     const inAuthGroup = segments[0] === '(auth)';
 
@@ -24,9 +48,9 @@ export default function Index() {
     } else if (!session) {
       router.replace('/(auth)/login');
     }
-  }, [session, loading, segments]);
+  }, [session, loading, segments, showSplash]);
 
-  if (loading) {
+  if (showSplash || loading) {
     return (
       <LinearGradient
         colors={['#F8F9FF', '#E8E5FF', '#F8F9FF']}
@@ -34,18 +58,26 @@ export default function Index() {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <View style={styles.content}>
+        <Animated.View
+          style={[
+            styles.content,
+            {
+              opacity: fadeAnim,
+              transform: [{ scale: scaleAnim }],
+            },
+          ]}
+        >
           <View style={styles.iconContainer}>
             <Flower2 size={80} color={theme.colors.primary} strokeWidth={1.5} />
           </View>
           <Text style={styles.title}>Flower Retail</Text>
           <Text style={styles.subtitle}>Smart Flower Retail Management</Text>
-        </View>
+        </Animated.View>
       </LinearGradient>
     );
   }
 
-  return <Loading />;
+  return null;
 }
 
 const styles = StyleSheet.create({

@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, Users, UserPlus, CreditCard, User } from 'lucide-react-native';
+import { Home, Users, CalendarCheck, UserPlus, User } from 'lucide-react-native';
 import { theme } from '@/constants/theme';
 
 export default function TabsLayout() {
@@ -26,35 +26,35 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'Dashboard',
           tabBarIcon: ({ size, color }) => <Home size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="farmers"
         options={{
-          title: 'Farmers',
+          title: 'Farmer',
           tabBarIcon: ({ size, color }) => <Users size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="today"
+        options={{
+          title: 'Today',
+          tabBarIcon: ({ size, color }) => <CalendarCheck size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="customers"
         options={{
-          title: 'Customers',
+          title: 'Customer',
           tabBarIcon: ({ size, color }) => <UserPlus size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="payments"
-        options={{
-          title: 'Payments',
-          tabBarIcon: ({ size, color }) => <CreditCard size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: 'Account',
           tabBarIcon: ({ size, color }) => <User size={size} color={color} />,
         }}
       />
